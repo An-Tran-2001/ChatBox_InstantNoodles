@@ -8,9 +8,9 @@ cloud_config= {
 }
 auth_provider = PlainTextAuthProvider(f'{ASTRA_CLIENT_ID}', f'{ASTRA_CLIENT_SECRET}')
 cluster = Cluster(cloud=cloud_config, auth_provider=auth_provider)
-session = cluster.connect()
+astraSession = cluster.connect()
 
-row = session.execute("select release_version from system.local").one()
+row = astraSession.execute("select release_version from system.local").one()
 if row:
   print(row[0])
 else:
