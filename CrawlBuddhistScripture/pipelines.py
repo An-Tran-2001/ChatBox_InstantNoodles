@@ -11,7 +11,7 @@ import json
 class CrawlbuddhistscripturePipeline:
     
     def open_spider(self, spider):
-        self.file = open('output.json', 'w', encoding='utf-8')
+        self.file = open('output.jsonl', 'w', encoding='utf-8')
 
     def close_spider(self, spider):
         self.file.close()

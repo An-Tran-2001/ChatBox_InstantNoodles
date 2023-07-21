@@ -1,6 +1,20 @@
 import scrapy
 import json
 from bs4 import BeautifulSoup
+from underthesea import text_normalize, word_tokenize
+import re
+
+
+def preprocess_text(sentence):
+    sentence = sentence.lower()
+    sentence = sentence.replace("\t", " ")
+    sentence = sentence.replace("__", " ")
+    sentence = sentence.replace("--", " ")
+    sentence = sentence.replace("....", "")
+    sentence = sentence.replace("  ", " ")
+    sentence = sentence.replace("  ", "")
+    sentence = text_normalize(sentence) 
+    return sentence
 
 class VbetaSpider(scrapy.Spider):
     name = "vbeta"
@@ -60,12 +74,15 @@ class VbetaSpider(scrapy.Spider):
         item_book = response.meta["item_book"]
         item_menu = response.meta["item_menu"]
         dictnew = {
-            "name": item_book['name'],
-            "author": item_book['author'],
-            "categoryName": item_book['categoryName'],
-            "publicationYear": item_book['publicationYear'],
-            "chapter": item_menu['name'],
-            'content': [span.get_text(strip=True) for html in data_text['result']['pages'] for span in BeautifulSoup(html['htmlContent'], 'html.parser').find_all('span')]
+            "name": preprocess_text(str(item_book['name'])),
+            "author": preprocess_text(str(item_book['author'])),
+            "categoryName": preprocess_text(str(item_book['categoryName'])),
+            "publicationYear": preprocess_text(str(item_book['publicationYear'])),
+            "chapter": preprocess_text(str(item_menu['name'])),
+            'content': preprocess_text(str(''.join(span.get_text() for html in data_text['result']['pages'] for span in BeautifulSoup(html['htmlContent'], 'html.parser').find_all('span'))))
         }
         yield dictnew
+
+
+
         
